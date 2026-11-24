@@ -28,7 +28,9 @@
       </div>
       <div class="stats-grid">
         <article class="stat-card">
-          <div class="stat-top"><span>Produtos cadastrados</span><span class="stat-icon purple">▤</span></div><strong id="statProducts">0</strong><small><span class="muted">Itens diferentes no catálogo</span></small>
+          <div class="stat-top"><span>Produtos cadastrados</span><span class="stat-icon purple">▤</span></div><strong id="statProducts">
+          <?php
+          ?></strong><small><span class="muted">Itens diferentes no catálogo</span></small>
         </article>
         <article class="stat-card">
           <div class="stat-top"><span>Unidades em estoque</span><span class="stat-icon blue">▦</span></div><strong id="statUnits">0</strong><small><span class="muted">Somatório das quantidades</span></small>
