@@ -12,6 +12,5 @@ if ($con->connect_error) {
     echo "Erro na conexão: " . $con->connect_error;
     exit;
 }
-echo "Conexão realizada com sucesso!<br>";
 
 ?>
