@@ -30,7 +30,7 @@ services:
       - "8080:80"
 
     volumes:
-      - ./front_end:/var/www/html
+      - ./:/var/www/html
     
     depends_on:
       - banco_stockeasy
