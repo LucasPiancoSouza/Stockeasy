@@ -1,0 +1,39 @@
+services:
+  banco_stockeasy:
+    image: mysql:8.4
+    container_name: banco_stockeasy
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+    ports:
+      - "3307:3306"
+    volumes:
+      - "mysql_data:/var/lib/mysql"
+  
+  php_stockeasy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: "php_stockeasy"
+    restart: unless-stopped
+
+    environment:
+      MYSQL_HOST: banco_stockeasy
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    
+    ports:
+      - "8080:80"
+
+    volumes:
+      - ./front_end:/var/www/html
+    
+    depends_on:
+      - banco_stockeasy
+
+volumes:
+  mysql_data:
