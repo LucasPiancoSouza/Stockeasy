@@ -1,3 +1,6 @@
+<?php
+require_once __DIR__ . "/../back_end/conexao/conexao.php";
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -44,16 +47,86 @@
                 <th>PRODUTO</th>
                 <th>CÓDIGO</th>
                 <th>CATEGORIA</th>
+                <th>DESCRIÇÂO</th>
                 <th>PREÇO</th>
                 <th>QUANTIDADE</th>
                 <th>STATUS</th>
+                <th>AÇÕES</th>
                 <th></th>
               </tr>
             </thead>
-            <tbody id="productsTable"></tbody>
+            <?php
+    $query = "SELECT * FROM produtos";
+    $stmt = mysqli_prepare($con, $query);
+
+    mysqli_stmt_execute($stmt);
+    $resultado = mysqli_stmt_get_result($stmt);
+    ?>
+<tbody id="recentProducts">
+
+    <?php
+    while ($registro = mysqli_fetch_assoc($resultado)) {
+
+        $quantidade = (int) $registro["quantidade"];
+        $estoque_minimo = (int) $registro["estoque_minimo"];
+
+        if ($quantidade === 0) {
+            $statusEstoque = "out";
+            $textoStatus = "Sem estoque";
+
+        } elseif ($quantidade <= $estoque_minimo) {
+            $statusEstoque = "low";
+            $textoStatus = "Estoque baixo";
+
+        } else {
+            $statusEstoque = "normal";
+            $textoStatus = "Disponível";
+        }
+    ?>
+
+               <tr
+    data-id="<?php echo (int)$registro['id_produto']; ?>"
+    data-stock="<?php echo $statusEstoque; ?>"
+    data-min="<?php echo $estoque_minimo; ?>"
+>
+    <td><?php echo htmlspecialchars($registro["nome"], ENT_QUOTES, "UTF-8"); ?></td>
+
+    <td><?php echo htmlspecialchars($registro["codigo"], ENT_QUOTES, "UTF-8"); ?></td>
+
+    <td><?php echo htmlspecialchars($registro["categoria"], ENT_QUOTES, "UTF-8"); ?></td>
+
+    <td><?php echo htmlspecialchars($registro["descricao"], ENT_QUOTES, "UTF-8"); ?></td>
+
+    <td><?php echo $registro["preco"]; ?></td>
+
+    <td><?php echo $quantidade; ?></td>
+
+    <td><?php echo $textoStatus; ?></td>
+
+    <td>
+    <div class="acoes-produto">
+
+        <button type="button" class="btn btn-outline btn-edit-product">
+            Editar
+        </button>
+
+        <button type="button" class="btn btn-delete-product">
+            Excluir
+        </button>
+
+    </div>
+</td>
+
+<td></td>
+</tr>
+
+    <?php
+    }
+    ?>
+
+</tbody>
           </table>
         </div>
-        <div class="table-footer"><span id="productCount">0 produtos</span></div>
       </article>
     </section>
     <div class="modal-backdrop" id="productModal" aria-hidden="true">
@@ -65,20 +138,30 @@
           </div><button class="close-btn" type="button" data-close-modal aria-label="Fechar">×</button>
         </div>
         <form id="productForm">
+
+        <input type="hidden" name="id_produto" id="idProduto">
+
           <label>Nome do produto<input name="name" type="text" required></label>
           <div class="form-row">
             <label>Código<input name="code" type="text" required></label>
             <label>Categoria<input name="category" type="text" required></label>
           </div>
           <div class="form-row">
-            <label>Preço (R$)<input name="price" type="number" min="0" step="0.01" required></label>
+            <label>Preco<input name="price" type="number" min="0.01" step="0.01" required></label>
             <label>Quantidade<input name="quantity" type="number" min="0" step="1" required></label>
           </div>
-          <div class="modal-actions"><button class="btn btn-outline" type="button" data-close-modal>Cancelar</button><button class="btn btn-primary" type="submit">Salvar produto</button></div>
+          <div class="form-row">
+            <label>Estoque minino<input name="min" type="number" min="0" step="1" required></label>
+            <label>Descrição<input name="descripition" type="text" required></label>
+          </div>
+          <div class="modal-actions"><button class="btn btn-outline" type="button" data-close-modal>Cancelar</button><button class="btn btn-primary" type="submit" id="cadastrar">Salvar produto</button></div>
         </form>
+        
       </section>
     </div>
   </main>
+
+  <div id="popupMensagem" class="popup-mensagem" role="status" aria-live="polite"></div>
   <script src="js/products.js"></script>
 </body>
 

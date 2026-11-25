@@ -1,3 +1,6 @@
+<?php 
+require_once __DIR__ . "/../back_end/conexao/conexao.php";
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -35,20 +38,77 @@
           </select>
         </div>
         <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>PRODUTO</th>
-                <th>TIPO</th>
-                <th>QUANTIDADE</th>
-                <th>DATA</th>
-                <th>OBSERVAÇÃO</th>
-              </tr>
-            </thead>
-            <tbody id="movementsTable"></tbody>
-          </table>
+<table>
+    <thead>
+        <tr>
+            <th>PRODUTO</th>
+            <th>TIPO</th>
+            <th>QUANTIDADE</th>
+            <th>DATA</th>
+            <th>OBSERVAÇÃO</th>
+        </tr>
+    </thead>
+
+    <tbody id="movementsTable">
+
+        <?php
+        $query = "SELECT
+                    m.id_movimentacao,
+                    p.nome,
+                    m.tipo_movimentacao,
+                    m.quantidade,
+                    m.data_movimentacao,
+                    m.observacao
+                  FROM movimentacoes m
+                  INNER JOIN produtos p
+                  ON m.id_produto = p.id_produto
+                  ORDER BY m.data_movimentacao DESC,
+                           m.id_movimentacao DESC";
+
+        $stmt = mysqli_prepare($con, $query);
+        mysqli_stmt_execute($stmt);
+        $resultado = mysqli_stmt_get_result($stmt);
+
+        while ($registro = mysqli_fetch_assoc($resultado)) {
+        ?>
+
+            <tr>
+                <td>
+                    <?php echo htmlspecialchars($registro["nome"]); ?>
+                </td>
+
+                <td>
+                    <?php
+                    if ($registro["tipo_movimentacao"] == "1") {
+                        echo "Entrada";
+                    } else {
+                        echo "Saída";
+                    }
+                    ?>
+                </td>
+
+                <td>
+                    <?php echo $registro["quantidade"]; ?>
+                </td>
+
+                <td>
+                    <?php
+                    echo date("d/m/Y H:i", strtotime($registro["data_movimentacao"]));
+                    ?>
+                </td>
+
+                <td>
+                    <?php echo htmlspecialchars($registro["observacao"] ?? ""); ?>
+                </td>
+            </tr>
+
+        <?php
+        }
+        ?>
+
+    </tbody>
+</table>
         </div>
-        <div class="table-footer"><span id="movementCount">0 movimentações</span>
       </article>
     </section>
     <div class="modal-backdrop" id="movementModal" aria-hidden="true">

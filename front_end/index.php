@@ -1,3 +1,6 @@
+<?php
+require_once __DIR__ . "/../back_end/conexao/conexao.php";
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -10,7 +13,7 @@
 </head>
 
 <body>
-  <aside class="sidebar"><a class="brand" href="index.php"><span class="brand-mark">S</span><span>stock<span class="brand-light">easy</span></span></a>
+<aside class="sidebar"><a class="brand" href="index.php"><span class="brand-mark">S</span><span>stock<span class="brand-light">easy</span></span></a>
     <p class="nav-label">MENU PRINCIPAL</p>
     <nav><a class="nav-item active" href="index.php">▦ Visão geral</a><a class="nav-item " href="produtos.php">▤ Produtos</a><a class="nav-item " href="movimentacoes.php">⇄ Movimentações</a></nav>
   </aside>
@@ -29,17 +32,51 @@
       <div class="stats-grid">
         <article class="stat-card">
           <div class="stat-top"><span>Produtos cadastrados</span><span class="stat-icon purple">▤</span></div><strong id="statProducts">
-          <?php
-          ?></strong><small><span class="muted">Itens diferentes no catálogo</span></small>
+          <?php 
+          $query ="Select count(*) as total from produtos";
+          $stmt = mysqli_prepare($con, $query);
+          mysqli_stmt_execute($stmt);
+          $resultado = mysqli_stmt_get_result($stmt);
+          $registro = mysqli_fetch_assoc($resultado);
+          echo $registro["total"];
+          ?>
+        </strong><small><span class="muted">Itens diferentes no catálogo</span></small>
         </article>
         <article class="stat-card">
-          <div class="stat-top"><span>Unidades em estoque</span><span class="stat-icon blue">▦</span></div><strong id="statUnits">0</strong><small><span class="muted">Somatório das quantidades</span></small>
+          <div class="stat-top"><span>Unidades em estoque</span><span class="stat-icon blue">▦</span></div><strong id="statUnits">
+            <?php 
+          $query ="Select sum(quantidade) as total from produtos";
+          $stmt = mysqli_prepare($con, $query);
+          mysqli_stmt_execute($stmt);
+          $resultado = mysqli_stmt_get_result($stmt);
+          $registro = mysqli_fetch_assoc($resultado);
+          echo $registro["total"];
+          ?>
+          </strong><small><span class="muted">Somatório das quantidades</span></small>
         </article>
         <article class="stat-card">
-          <div class="stat-top"><span>Estoque baixo</span><span class="stat-icon orange">!</span></div><strong id="statLow">0</strong><small><span class="warning-text">Precisam de reposição</span></small>
+          <div class="stat-top"><span>Estoque baixo</span><span class="stat-icon orange">!</span></div><strong id="statLow">
+            <?php 
+          $query ="Select count(*) as total from produtos where quantidade < estoque_minimo";
+          $stmt = mysqli_prepare($con, $query);
+          mysqli_stmt_execute($stmt);
+          $resultado = mysqli_stmt_get_result($stmt);
+          $registro = mysqli_fetch_assoc($resultado);
+          echo $registro["total"];
+          ?>
+          </strong><small><span class="warning-text">Precisam de reposição</span></small>
         </article>
         <article class="stat-card">
-          <div class="stat-top"><span>Valor em estoque</span><span class="stat-icon green">$</span></div><strong id="statValue">R$ 0,00</strong><small><span class="muted">Com base no custo cadastrado</span></small>
+          <div class="stat-top"><span>Valor em estoque</span><span class="stat-icon green">$</span></div><strong id="statValue">
+                 <?php 
+          $query ="Select sum(preco) as total from produtos";
+          $stmt = mysqli_prepare($con, $query);
+          mysqli_stmt_execute($stmt);
+          $resultado = mysqli_stmt_get_result($stmt);
+          $registro = mysqli_fetch_assoc($resultado);
+          echo "R$ ".$registro["total"];
+          ?>
+          </strong><small><span class="muted">Com base no custo cadastrado</span></small>
         </article>
       </div>
 
@@ -49,32 +86,136 @@
             <div>
               <h2>Produtos recentes</h2>
               <p>Últimos produtos adicionados ao catálogo</p>
+
             </div><button class="text-btn" data-go="products">Ver todos <span>→</span></button>
           </div>
           <div class="table-wrap">
             <table>
-              <thead>
+    <thead>
+        <tr>
+            <th>PRODUTO</th>
+            <th>CATEGORIA</th>
+            <th>QUANTIDADE</th>
+            <th>STATUS</th>
+        </tr>
+    </thead>
+
+    <?php
+    $query = "SELECT * FROM produtos limit 5";
+    $stmt = mysqli_prepare($con, $query);
+
+    mysqli_stmt_execute($stmt);
+    $resultado = mysqli_stmt_get_result($stmt);
+    ?>
+
+    <tbody id="recentProducts">
+        <?php
+        while ($registro = mysqli_fetch_assoc($resultado)) {
+        ?>
+            <tr>
+                <td><?php echo $registro["nome"]; ?></td>
+
+                <td><?php echo $registro["descricao"]; ?></td>
+
+                <td><?php echo $registro["quantidade"]; ?></td>
+
+                <td>
+                    <?php
+                    if ($registro["quantidade"] <= $registro["estoque_minimo"]) {
+                        echo "Estoque baixo";
+                    } else {
+                        echo "Disponível";
+                    }
+                    ?>
+                </td>
+            </tr>
+        <?php
+        }
+        ?>
+    </tbody>
+</table>
+          </div>
+        </article>
+     <article class="panel alerts-panel">
+    <div class="panel-heading">
+        <div>
+            <h2>Estoque baixo</h2>
+            <p>Produtos que precisam de atenção</p>
+        </div>
+
+        <?php
+        $query = "SELECT * FROM produtos
+                  WHERE quantidade <= estoque_minimo";
+
+        $stmt = mysqli_prepare($con, $query);
+        mysqli_stmt_execute($stmt);
+        $resultado = mysqli_stmt_get_result($stmt);
+
+        $total_alertas = mysqli_num_rows($resultado);
+        ?>
+
+        <span class="alert-count">
+            <?php echo $total_alertas; ?>
+        </span>
+    </div>
+
+    <div class="low-stock-list">
+
+        <table>
+            <thead>
                 <tr>
-                  <th>PRODUTO</th>
-                  <th>CATEGORIA</th>
-                  <th>QUANTIDADE</th>
-                  <th>STATUS</th>
+                    <th>PRODUTO</th>
+                    <th>QUANTIDADE</th>
+                    <th>ESTOQUE MÍNIMO</th>
+                    <th>STATUS</th>
                 </tr>
-              </thead>
-              <tbody id="recentProducts"></tbody>
-            </table>
-          </div>
-        </article>
-        <article class="panel alerts-panel">
-          <div class="panel-heading">
-            <div>
-              <h2>Estoque baixo</h2>
-              <p>Produtos que precisam de atenção</p>
-            </div><span class="alert-count" id="alertCount">0</span>
-          </div>
-          <div id="lowStockList" class="low-stock-list"></div>
-          <button class="btn btn-outline full-btn" data-go="products">Conferir estoque <span>→</span></button>
-        </article>
+            </thead>
+
+            <tbody>
+                <?php
+                while ($registro = mysqli_fetch_assoc($resultado)) {
+                ?>
+                    <tr>
+                        <td>
+                            <?php echo $registro["nome"]; ?>
+                        </td>
+
+                        <td>
+                            <?php echo $registro["quantidade"]; ?>
+                        </td>
+
+                        <td>
+                            <?php echo $registro["estoque_minimo"]; ?>
+                        </td>
+
+                        <td>
+                            <span class="status-low">
+                                Estoque baixo
+                            </span>
+                        </td>
+                    </tr>
+                <?php
+                }
+
+                if ($total_alertas == 0) {
+                ?>
+                    <tr>
+                        <td colspan="4">
+                            Nenhum produto com estoque baixo.
+                        </td>
+                    </tr>
+                <?php
+                }
+                ?>
+            </tbody>
+        </table>
+
+    </div>
+
+    <button class="btn btn-outline full-btn" data-go="products">
+        Conferir estoque <span>→</span>
+    </button>
+</article>
       </div>
       <article class="panel activity-panel">
         <div class="panel-heading">
@@ -93,7 +234,62 @@
                 <th>DATA</th>
               </tr>
             </thead>
-            <tbody id="recentMovements"></tbody>
+            <tbody id="recentMovements">
+
+    <?php
+    $query = "SELECT 
+                m.id_movimentacao,
+                p.nome,
+                m.tipo_movimentacao,
+                m.quantidade,
+                m.data_movimentacao,
+                m.observacao
+              FROM movimentacoes m
+              INNER JOIN produtos p
+              ON m.id_produto = p.id_produto
+              ORDER BY m.data_movimentacao DESC
+              LIMIT 5";
+
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_execute($stmt);
+    $resultado = mysqli_stmt_get_result($stmt);
+
+    while ($registro = mysqli_fetch_assoc($resultado)) {
+    ?>
+
+        <tr>
+            <td>
+                <?php echo $registro["nome"]; ?>
+            </td>
+
+            <td>
+                <?php
+                if ($registro["tipo_movimentacao"] == "1") {
+                    echo "Entrada";
+                } else {
+                    echo "Saída";
+                }
+                ?>
+            </td>
+
+            <td>
+                <?php echo $registro["quantidade"]; ?>
+            </td>
+
+            <td>
+                <?php echo date("d/m/Y H:i", strtotime($registro["data_movimentacao"])); ?>
+            </td>
+
+            <td>
+                <?php echo $registro["observacao"]; ?>
+            </td>
+        </tr>
+
+    <?php
+    }
+    ?>
+
+</tbody>
           </table>
         </div>
       </article>
