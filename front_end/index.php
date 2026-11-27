@@ -24,7 +24,6 @@ require_once __DIR__ . "/../back_end/conexao/conexao.php";
     <section class="page dashboard-page">
       <div class="page-heading">
         <div>
-          <p class="eyebrow">SEGUNDA-FEIRA, 23 DE NOVEMBRO</p>
           <h1>Visão geral</h1>
           <p class="subtitle">Aqui está o resumo do seu estoque hoje.</p>
         </div>
