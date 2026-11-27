@@ -15,7 +15,7 @@ require_once __DIR__ . "/../back_end/conexao/conexao.php";
 <body>
 <aside class="sidebar"><a class="brand" href="index.php"><span class="brand-mark">S</span><span>stock<span class="brand-light">easy</span></span></a>
     <p class="nav-label">MENU PRINCIPAL</p>
-    <nav><a class="nav-item active" href="index.php">▦ Visão geral</a><a class="nav-item " href="produtos.php">▤ Produtos</a><a class="nav-item " href="movimentacoes.php">⇄ Movimentações</a></nav>
+    <nav><a class="nav-item active" href="index.php">▦ Visão geral</a><a class="nav-item " href="produtos.php">▤ Produtos</a></nav>
   </aside>
   <main class="main">
     <header class="topbar">
@@ -217,82 +217,6 @@ require_once __DIR__ . "/../back_end/conexao/conexao.php";
     </button>
 </article>
       </div>
-      <article class="panel activity-panel">
-        <div class="panel-heading">
-          <div>
-            <h2>Movimentações recentes</h2>
-            <p>Entradas e saídas registradas no sistema</p>
-          </div><button class="text-btn" data-go="movements">Ver movimentações <span>→</span></button>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>PRODUTO</th>
-                <th>TIPO</th>
-                <th>QUANTIDADE</th>
-                <th>DATA</th>
-              </tr>
-            </thead>
-            <tbody id="recentMovements">
-
-    <?php
-    $query = "SELECT 
-                m.id_movimentacao,
-                p.nome,
-                m.tipo_movimentacao,
-                m.quantidade,
-                m.data_movimentacao,
-                m.observacao
-              FROM movimentacoes m
-              INNER JOIN produtos p
-              ON m.id_produto = p.id_produto
-              ORDER BY m.data_movimentacao DESC
-              LIMIT 5";
-
-    $stmt = mysqli_prepare($con, $query);
-    mysqli_stmt_execute($stmt);
-    $resultado = mysqli_stmt_get_result($stmt);
-
-    while ($registro = mysqli_fetch_assoc($resultado)) {
-    ?>
-
-        <tr>
-            <td>
-                <?php echo $registro["nome"]; ?>
-            </td>
-
-            <td>
-                <?php
-                if ($registro["tipo_movimentacao"] == "1") {
-                    echo "Entrada";
-                } else {
-                    echo "Saída";
-                }
-                ?>
-            </td>
-
-            <td>
-                <?php echo $registro["quantidade"]; ?>
-            </td>
-
-            <td>
-                <?php echo date("d/m/Y H:i", strtotime($registro["data_movimentacao"])); ?>
-            </td>
-
-            <td>
-                <?php echo $registro["observacao"]; ?>
-            </td>
-        </tr>
-
-    <?php
-    }
-    ?>
-
-</tbody>
-          </table>
-        </div>
-      </article>
     </section>
     <div class="modal-backdrop" id="productModal" aria-hidden="true">
       <section class="modal" role="dialog" aria-modal="true" aria-labelledby="productModalTitle">

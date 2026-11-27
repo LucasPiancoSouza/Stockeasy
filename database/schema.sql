@@ -14,17 +14,3 @@ constraint estoque_positivo check (estoque_minimo >= 0),
 constraint preco_positivo check (preco > 0)
 
 );
-
-create table movimentacoes (
-id_movimentacao int not null primary key auto_increment,
-id_produto int not null,
-tipo_movimentacao enum("0","1") not null, -- 0 saida -- 1 entrada 
-quantidade int not null, 
-data_movimentacao datetime default current_timestamp,
-observacao text,
-
-foreign key (id_produto) references produtos(id_produto),
-constraint quantidade_movimentacao_positiva check (quantidade > 0)
-
-);
-

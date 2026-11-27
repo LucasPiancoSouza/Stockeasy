@@ -18,11 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
         button.addEventListener("click", () => location.href = "produtos.php")
     );
 
-    document.querySelectorAll('[data-go="movements"]').forEach(button =>
-        button.addEventListener("click", () => location.href = "movimentacoes.php")
-    );
-
-
     // POP-UP DE MENSAGENS
 
     let tempoPopup;

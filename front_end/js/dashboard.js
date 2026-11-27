@@ -2,10 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll('[data-go="products"]').forEach(button =>
     button.addEventListener("click", () => location.href = "produtos.php")
   );
-  document.querySelectorAll('[data-go="movements"]').forEach(button =>
-    button.addEventListener("click", () => location.href = "movimentacoes.php")
-  );
-
   const modal = document.getElementById("productModal");
   const openModal = () => {
     modal?.classList.add("open");

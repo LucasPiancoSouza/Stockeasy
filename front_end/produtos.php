@@ -15,7 +15,7 @@ require_once __DIR__ . "/../back_end/conexao/conexao.php";
 <body>
   <aside class="sidebar"><a class="brand" href="index.php"><span class="brand-mark">S</span><span>stock<span class="brand-light">easy</span></span></a>
     <p class="nav-label">MENU PRINCIPAL</p>
-    <nav><a class="nav-item " href="index.php">▦ Visão geral</a><a class="nav-item active" href="produtos.php">▤ Produtos</a><a class="nav-item " href="movimentacoes.php">⇄ Movimentações</a></nav>
+    <nav><a class="nav-item " href="index.php">▦ Visão geral</a><a class="nav-item active" href="produtos.php">▤ Produtos</a></nav>
   </aside>
   <main class="main">
     <header class="topbar">
